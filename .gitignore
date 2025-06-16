@@ -1,0 +1,16 @@
+# Environment variables
+.env
+
+# Python virtual environment
+venv/
+
+# Generated reports & evidence
+ai_reports/
+evidence/
+
+# macOS files
+.DS_Store
+
+# Python cache
+__pycache__/
+*.pyc
