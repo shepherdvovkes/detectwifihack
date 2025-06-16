@@ -14,7 +14,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
 
 # Scapy imports, including the pcap writer
-from scapy.all import wrpcap, Dot11, Dot11Auth, Dot11Deauth, Dot11Disas, Dot11Beacon, Dot11ProbeReq, Dot11ProbeResp, EAPOL, Dot11AssoReq, RadioTap, Dot11Elt, ARP, DNS, DHCP, BOOTP
+from scapy.all import PcapWriter, Dot11, Dot11Auth, Dot11Deauth, Dot11Disas, Dot11Beacon, Dot11ProbeReq, Dot11ProbeResp, EAPOL, Dot11AssoReq, RadioTap, Dot11Elt, ARP, DNS, DHCP, BOOTP
 from pcap_utils import load_pcap_fast
 from tqdm import tqdm
 from pick import pick
@@ -88,11 +88,11 @@ def save_evidence(threats_collection, original_pcap_name):
     pcap_filename = os.path.join(EVIDENCE_DIRECTORY, f"{base_filename}.pcap")
     txt_filename = os.path.join(EVIDENCE_DIRECTORY, f"{base_filename}.txt")
 
-    all_rogue_packets = []
-    
+    total_packets = sum(len(p) for p in threats_collection.values())
+
     print(f"\n💾 Saving threat evidence to '{base_filename}.pcap' and '.txt'...")
 
-    with open(txt_filename, 'w') as f:
+    with PcapWriter(pcap_filename, append=True, sync=True) as writer, open(txt_filename, 'w') as f:
         f.write(f"Wi-Fi Threat Scanner - Evidence Report\n")
         f.write(f"Source Capture: {original_pcap_name}\n")
         f.write(f"Report Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
@@ -102,10 +102,10 @@ def save_evidence(threats_collection, original_pcap_name):
             f.write(f"🚨 THREAT DETECTED: {threat_desc}\n")
             f.write(f"   Number of related packets found: {len(packets)}\n")
             f.write("--------------------------------------------------\n\n")
-            
+
             for i, packet in enumerate(packets):
-                all_rogue_packets.append(packet)
-                
+                writer.write(packet)
+
                 f.write(f"--- Packet #{i+1} Summary: {packet.summary()} ---\n")
                 # Capture the full, detailed output of packet.show()
                 string_io = io.StringIO()
@@ -116,10 +116,8 @@ def save_evidence(threats_collection, original_pcap_name):
                 f.write("-" * 20 + "\n\n")
             f.write("\n")
 
-    # The wrpcap function can handle duplicate packets, but let's write them all
-    if all_rogue_packets:
-        wrpcap(pcap_filename, all_rogue_packets)
-        print(f"✅ Successfully saved {len(all_rogue_packets)} packets to {pcap_filename}")
+    if total_packets:
+        print(f"✅ Successfully saved {total_packets} packets to {pcap_filename}")
         print(f"✅ Detailed report saved to {txt_filename}")
 
 # --- ALL THREAT DETECTION FUNCTIONS (YIELDING PACKETS) ---
