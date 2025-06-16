@@ -8,9 +8,6 @@ venv/
 ai_reports/
 evidence/
 
-#donotpush
-.log
-
 # macOS files
 .DS_Store
 
