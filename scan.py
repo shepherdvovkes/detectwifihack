@@ -12,7 +12,7 @@ import io
 from contextlib import redirect_stdout
 
 # Scapy imports, including the pcap writer
-from scapy.all import rdpcap, wrpcap, Dot11, Dot11Auth, Dot11Deauth, Dot11Disas, Dot11Beacon, Dot11ProbeReq, Dot11ProbeResp, EAPOL, Dot11AssoReq, RadioTap, Dot11Elt, ARP, DNS, DHCP, BOOTP
+from scapy.all import wrpcap, PcapReader, Dot11, Dot11Auth, Dot11Deauth, Dot11Disas, Dot11Beacon, Dot11ProbeReq, Dot11ProbeResp, EAPOL, Dot11AssoReq, RadioTap, Dot11Elt, ARP, DNS, DHCP, BOOTP
 from tqdm import tqdm
 from pick import pick
 
@@ -69,6 +69,23 @@ def load_detections_from_json(file_path):
     except json.JSONDecodeError:
         print(f"❌ Critical Error: Could not parse the JSON in '{file_path}'")
         return None
+
+def load_pcap_fast(pcap_path):
+    """Load packets using PcapReader while displaying progress."""
+    file_size = os.path.getsize(pcap_path)
+    packets = []
+    try:
+        with PcapReader(pcap_path) as reader, tqdm(total=file_size, unit="B", unit_scale=True, desc="Reading PCAP") as bar:
+            prev = 0
+            for pkt in reader:
+                packets.append(pkt)
+                pos = reader.f.tell()
+                bar.update(pos - prev)
+                prev = pos
+    except Exception as e:
+        print(f"❌ Error reading {os.path.basename(pcap_path)}: {e}")
+        return []
+    return packets
 
 # --- FIXED: Function to save evidence files with detailed descriptions ---
 def save_evidence(threats_collection, original_pcap_name):
@@ -368,10 +385,8 @@ def run_pcap_analysis(pcap_files_to_scan, scan_plan):
     for pcap_file in pcap_files_to_scan:
         print("\n" + "=" * 60)
         print(f"📄 Scanning: {os.path.basename(pcap_file)}")
-        try:
-            packets = rdpcap(pcap_file)
-        except Exception as e:
-            print(f"❌ Error reading {os.path.basename(pcap_file)}: {e}")
+        packets = load_pcap_fast(pcap_file)
+        if not packets:
             continue
 
         threats_collection = defaultdict(list)
