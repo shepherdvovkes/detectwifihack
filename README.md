@@ -1,11 +1,6 @@
 # Wi-Fi Security & Threat Intelligence Suite
 
-  █░█░█ █▀ █░█ █▀▀ █▀▀ █░█ █▀█ █▄░█
-  ▀▄▀▄▀ ▄█ █▀█ █▄▄ ██▄ ▀▄▀ █▄█ █░▀█
-
 An advanced toolkit for performing deep-packet inspection and analysis of 802.11 wireless traffic. This suite combines rule-based threat detection, behavioral analysis, and physical-layer fingerprinting to provide security professionals and network administrators with a powerful system for identifying and responding to Wi-Fi vulnerabilities and attacks.
-
----
 
 ## Table of Contents
 1.  [Core Features](#core-features)
