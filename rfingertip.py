@@ -8,8 +8,7 @@ from datetime import datetime
 import sys
 
 # Scapy for packet reading
-from scapy.all import RadioTap, Dot11
-from pcap_utils import load_pcap_fast
+from scapy.all import RadioTap, Dot11, PcapReader
 
 # Matplotlib for plotting
 import matplotlib.pyplot as plt
@@ -171,15 +170,19 @@ class AnalysisWorker(QObject):
     def run(self):
         """The main analysis logic."""
         try:
-            all_packets = []
+            grouped = defaultdict(list)
             for filename in self.filenames:
-                all_packets.extend(load_pcap_fast(filename))
-            
-            if not all_packets:
+                with PcapReader(filename) as reader:
+                    for pkt in reader:
+                        features = extract_packet_features(pkt)
+                        if features:
+                            mac, ts, rssi = features
+                            grouped[mac].append((ts, rssi))
+
+            if not grouped:
                 self.error.emit("No valid 802.11 packets found in the selected files.")
                 return
 
-            grouped = group_by_mac(all_packets)
             fingerprints = analyze_grouped_data(grouped)
             clusters = detect_similar_fingerprints(fingerprints)
             self.finished.emit(clusters)
