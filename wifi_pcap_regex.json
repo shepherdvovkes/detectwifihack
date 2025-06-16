@@ -1,0 +1,31 @@
+{
+  "detections": [
+    {"id": 1, "name": "Deauthentication/Disassociation Floods", "regex": "(Dot11Deauth|Dot11Disas)"},
+    {"id": 2, "name": "Rogue Access Points", "regex": "(Beacon.*unknown BSSID)"},
+    {"id": 3, "name": "WPA Handshake Capture", "regex": "(EAPOL.*Message.*4-Way Handshake)"},
+    {"id": 4, "name": "Anomalous Probe Requests", "regex": "(Dot11ProbeReq.*unknown SSID)"},
+    {"id": 5, "name": "Malformed Beacon Frames", "regex": "(Dot11Beacon.*SSID.*length.*> 32)"},
+    {"id": 6, "name": "Evil Twin Attacks", "regex": "(BSSID.*multiple channels|sequence number jump)"},
+    {"id": 7, "name": "ARP Spoofing", "regex": "(ARP reply.*multiple MAC addresses)"},
+    {"id": 8, "name": "DNS Spoofing", "regex": "(DNS.*unexpected IP)"},
+    {"id": 9, "name": "Client MAC Spoofing", "regex": "(MAC.*rapid change)"},
+    {"id": 10, "name": "SSID Broadcast Flooding", "regex": "(Beacon.*random SSIDs)"},
+    {"id": 11, "name": "Channel Congestion", "regex": "(retransmission.*high rate)"},
+    {"id": 12, "name": "High Retransmissions", "regex": "(Retransmission.*exceed.*threshold)"},
+    {"id": 13, "name": "DHCP Starvation", "regex": "(DHCP.*Discover.*excessive)"},
+    {"id": 14, "name": "Broadcast Storms", "regex": "(broadcast.*storm|multicast.*flood)"},
+    {"id": 15, "name": "Device Tracking via MAC/SSID Probing", "regex": "(Probe.*consistent.*tracking)"},
+    {"id": 16, "name": "Location Profiling", "regex": "(Probe Request.*multiple known SSIDs)"},
+    {"id": 17, "name": "Unexpected Protocol Usage", "regex": "(Protocol.*unexpected.*Wi-Fi)"},
+    {"id": 18, "name": "Suspicious Timing Patterns", "regex": "(Probe.*interval.*regular)"},
+    {"id": 19, "name": "Signal Strength Manipulation", "regex": "(RSSI.*irregular fluctuations)"},
+    {"id": 20, "name": "Cryptographic Downgrade Attacks", "regex": "(KRACK|Key Reinstallation)"},
+    {"id": 21, "name": "Authentication Floods", "regex": "(Dot11Auth.*excessive)"},
+    {"id": 22, "name": "RTS/CTS Floods", "regex": "(Dot11RTS|Dot11CTS.*excessive)"},
+    {"id": 23, "name": "Beacon Floods", "regex": "(Dot11Beacon.*excessive unique BSSID)"},
+    {"id": 24, "name": "WPS Brute-Force Indicators", "regex": "(WPS.*failure.*M4|M6 NACK)"},
+    {"id": 25, "name": "PMKID Capture", "regex": "(PMKID.*Dot11AssoReq)"},
+    {"id": 26, "name": "Hidden SSID Decloaking", "regex": "(Hidden SSID.*decloaked)"},
+    {"id": 27, "name": "Karma/MANA Attack Indicators", "regex": "(ProbeResp.*non-beaconed SSID)"}
+  ]
+}
