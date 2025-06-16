@@ -31,6 +31,20 @@ def import_analyze_evidence():
         setattr(scapy_all, name, type(name, (), {}))
     scapy_all.rdpcap = lambda *args, **kwargs: []
     scapy_all.RawPcapReader = lambda *a, **k: iter([])
+    class DummyPcapReader:
+        def __init__(self, *a, **k):
+            pass
+
+        def __iter__(self):
+            return iter([])
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            pass
+
+    scapy_all.PcapReader = DummyPcapReader
     scapy = types.ModuleType('scapy')
     scapy.all = scapy_all
     modules['scapy'] = scapy

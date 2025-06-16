@@ -12,8 +12,14 @@ import openai
 import anthropic
 
 # Scapy is used for packet analysis
-from scapy.all import Dot11, Dot11Deauth, Dot11Disas, Dot11Auth, Dot11ProbeReq
-from pcap_utils import load_pcap_fast
+from scapy.all import (
+    Dot11,
+    Dot11Deauth,
+    Dot11Disas,
+    Dot11Auth,
+    Dot11ProbeReq,
+    PcapReader,
+)
 
 # Pick is used for the interactive menu
 from pick import pick
@@ -117,19 +123,30 @@ def get_packet_type(packet):
     return "Generic Malicious Traffic"
 
 def analyze_evidence_file(pcap_path, known_ap_bssids):
-    attackers = defaultdict(lambda: {'count': 0, 'packet_types': defaultdict(int)})
+    attackers = defaultdict(lambda: {
+        'count': 0,
+        'packet_types': defaultdict(int)
+    })
+
     try:
-        packets = load_pcap_fast(pcap_path)
+        with PcapReader(pcap_path) as reader:
+            for packet in reader:
+                if (
+                    packet.haslayer(Dot11)
+                    and hasattr(packet, 'addr1')
+                    and packet.addr1 in known_ap_bssids
+                ):
+                    attacker_mac = packet.addr2
+                    if attacker_mac in known_ap_bssids:
+                        continue
+                    attackers[attacker_mac]['count'] += 1
+                    attackers[attacker_mac]['packet_types'][
+                        get_packet_type(packet)
+                    ] += 1
     except Exception as e:
         print(f"❌ Error reading pcap file: {e}")
         return None
 
-    for packet in packets:
-        if packet.haslayer(Dot11) and hasattr(packet, 'addr1') and packet.addr1 in known_ap_bssids:
-            attacker_mac = packet.addr2
-            if attacker_mac in known_ap_bssids: continue
-            attackers[attacker_mac]['count'] += 1
-            attackers[attacker_mac]['packet_types'][get_packet_type(packet)] += 1
     return attackers
 
 def display_results(attackers):
