@@ -1,0 +1,9 @@
+scapy
+pyqt6
+matplotlib
+numpy
+python-dotenv
+openai
+anthropic
+pick
+tqdm

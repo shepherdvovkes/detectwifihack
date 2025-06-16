@@ -82,10 +82,15 @@ python3 -m venv venv
 # Activate it (macOS/Linux)
 source venv/bin/activate
 4. Install Dependencies
-Create a file named requirements.txt with the content below, then run the installer.
+Install the required Python packages using the included `requirements.txt` file.
 
-Plaintext
-# requirements.txt
+```bash
+pip install -r requirements.txt
+```
+
+The file lists the following packages:
+
+```plaintext
 scapy
 pyqt6
 matplotlib
@@ -94,10 +99,8 @@ python-dotenv
 openai
 anthropic
 pick
-Install all dependencies:
-
-Bash
-pip install -r requirements.txt
+tqdm
+```
 5. Set Up API Keys
 Create a file named .env in the root of the project directory. Add your API keys, ensuring they are enclosed in quotes:
 

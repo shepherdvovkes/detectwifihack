@@ -19,3 +19,5 @@ evidence/
 # Python cache
 __pycache__/
 *.pyc
+rf_fingerprints_report.json
+
