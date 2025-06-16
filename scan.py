@@ -10,6 +10,8 @@ from time import sleep
 from datetime import datetime
 import io
 from contextlib import redirect_stdout
+from concurrent.futures import ProcessPoolExecutor, as_completed
+import multiprocessing
 
 # Scapy imports, including the pcap writer
 from scapy.all import wrpcap, PcapReader, Dot11, Dot11Auth, Dot11Deauth, Dot11Disas, Dot11Beacon, Dot11ProbeReq, Dot11ProbeResp, EAPOL, Dot11AssoReq, RadioTap, Dot11Elt, ARP, DNS, DHCP, BOOTP
@@ -96,7 +98,7 @@ def save_evidence(threats_collection, original_pcap_name):
     if not os.path.exists(EVIDENCE_DIRECTORY):
         os.makedirs(EVIDENCE_DIRECTORY)
 
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")
     base_filename = f"warning_{timestamp}"
     pcap_filename = os.path.join(EVIDENCE_DIRECTORY, f"{base_filename}.pcap")
     txt_filename = os.path.join(EVIDENCE_DIRECTORY, f"{base_filename}.txt")
@@ -381,38 +383,50 @@ def get_pcap_files(directory):
     
     return sorted(all_files, key=os.path.getmtime, reverse=True)
 
+def _process_single_pcap(pcap_file, scan_plan):
+    """Helper for multiprocessing: analyze one pcap file."""
+    output_lines = []
+    output_lines.append("\n" + "=" * 60)
+    output_lines.append(f"📄 Scanning: {os.path.basename(pcap_file)}")
+
+    packets = load_pcap_fast(pcap_file)
+    if not packets:
+        return "\n".join(output_lines)
+
+    threats_collection = defaultdict(list)
+    active_plan = [d for d in scan_plan if d.get("name") in DETECTION_DISPATCHER]
+
+    for detection in active_plan:
+        check_name = detection["name"]
+        check_function = DETECTION_DISPATCHER.get(check_name)
+        if check_function:
+            for threat_desc, packet in check_function(packets):
+                threats_collection[threat_desc].append(packet)
+
+    output_lines.append("-" * 60)
+    if threats_collection:
+        output_lines.append(f"🚨 Threats Detected in {os.path.basename(pcap_file)}:")
+        for threat, pkts in sorted(threats_collection.items()):
+            log_message = f"  - {threat} (Count: {len(pkts)})"
+            output_lines.append(log_message)
+            logging.warning(f"[{os.path.basename(pcap_file)}] {log_message}")
+        save_evidence(threats_collection, os.path.basename(pcap_file))
+    else:
+        output_lines.append(f"✅ No threats detected in {os.path.basename(pcap_file)}.")
+    output_lines.append("-" * 60)
+    return "\n".join(output_lines)
+
+
 def run_pcap_analysis(pcap_files_to_scan, scan_plan):
-    for pcap_file in pcap_files_to_scan:
-        print("\n" + "=" * 60)
-        print(f"📄 Scanning: {os.path.basename(pcap_file)}")
-        packets = load_pcap_fast(pcap_file)
-        if not packets:
-            continue
-
-        threats_collection = defaultdict(list)
-        active_plan = [d for d in scan_plan if d.get("name") in DETECTION_DISPATCHER]
-        scan_progress = tqdm(active_plan, desc="Running Checks", unit=" check", leave=False)
-        
-        for detection in scan_progress:
-            check_name = detection["name"]
-            scan_progress.set_description(f"Checking: {check_name}")
-            check_function = DETECTION_DISPATCHER.get(check_name)
-            if check_function:
-                for threat_desc, packet in check_function(packets):
-                    threats_collection[threat_desc].append(packet)
-        scan_progress.close()
-
-        print("-" * 60)
-        if threats_collection:
-            print(f"🚨 Threats Detected in {os.path.basename(pcap_file)}:")
-            for threat, pkts in sorted(threats_collection.items()):
-                log_message = f"  - {threat} (Count: {len(pkts)})"
-                print(log_message)
-                logging.warning(f"[{os.path.basename(pcap_file)}] {log_message}")
-            save_evidence(threats_collection, os.path.basename(pcap_file))
-        else:
-            print(f"✅ No threats detected in {os.path.basename(pcap_file)}.")
-        print("-" * 60)
+    if len(pcap_files_to_scan) > 1:
+        max_workers = min(multiprocessing.cpu_count(), len(pcap_files_to_scan))
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(_process_single_pcap, f, scan_plan) for f in pcap_files_to_scan]
+            for future in as_completed(futures):
+                print(future.result())
+    else:
+        result = _process_single_pcap(pcap_files_to_scan[0], scan_plan)
+        print(result)
 
 def main():
     if not os.path.exists(EVIDENCE_DIRECTORY):
