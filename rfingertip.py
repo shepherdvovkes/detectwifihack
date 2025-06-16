@@ -8,7 +8,8 @@ from datetime import datetime
 import sys
 
 # Scapy for packet reading
-from scapy.all import rdpcap, RadioTap, Dot11
+from scapy.all import RadioTap, Dot11
+from pcap_utils import load_pcap_fast
 
 # Matplotlib for plotting
 import matplotlib.pyplot as plt
@@ -172,7 +173,7 @@ class AnalysisWorker(QObject):
         try:
             all_packets = []
             for filename in self.filenames:
-                all_packets.extend(rdpcap(filename))
+                all_packets.extend(load_pcap_fast(filename))
             
             if not all_packets:
                 self.error.emit("No valid 802.11 packets found in the selected files.")

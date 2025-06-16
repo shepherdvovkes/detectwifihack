@@ -12,7 +12,8 @@ import openai
 import anthropic
 
 # Scapy is used for packet analysis
-from scapy.all import rdpcap, Dot11, Dot11Deauth, Dot11Disas, Dot11Auth, Dot11ProbeReq
+from scapy.all import Dot11, Dot11Deauth, Dot11Disas, Dot11Auth, Dot11ProbeReq
+from pcap_utils import load_pcap_fast
 
 # Pick is used for the interactive menu
 from pick import pick
@@ -118,7 +119,7 @@ def get_packet_type(packet):
 def analyze_evidence_file(pcap_path, known_ap_bssids):
     attackers = defaultdict(lambda: {'count': 0, 'packet_types': defaultdict(int)})
     try:
-        packets = rdpcap(pcap_path)
+        packets = load_pcap_fast(pcap_path)
     except Exception as e:
         print(f"❌ Error reading pcap file: {e}")
         return None
