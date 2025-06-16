@@ -27,9 +27,10 @@ def import_analyze_evidence():
     modules['pick'] = pick
 
     scapy_all = types.ModuleType('scapy.all')
-    for name in ['Dot11', 'Dot11Deauth', 'Dot11Disas', 'Dot11Auth', 'Dot11ProbeReq']:
+    for name in ['Dot11', 'Dot11Deauth', 'Dot11Disas', 'Dot11Auth', 'Dot11ProbeReq', 'RadioTap']:
         setattr(scapy_all, name, type(name, (), {}))
     scapy_all.rdpcap = lambda *args, **kwargs: []
+    scapy_all.RawPcapReader = lambda *a, **k: iter([])
     scapy = types.ModuleType('scapy')
     scapy.all = scapy_all
     modules['scapy'] = scapy

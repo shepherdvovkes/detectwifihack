@@ -34,6 +34,7 @@ def import_rfingertip():
     # Stub scapy
     scapy_all = types.ModuleType('scapy.all')
     scapy_all.rdpcap = lambda *a, **k: []
+    scapy_all.RawPcapReader = lambda *a, **k: iter([])
     for name in ['RadioTap', 'Dot11']:
         setattr(scapy_all, name, type(name, (), {}))
     scapy = types.ModuleType('scapy')
