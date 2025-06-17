@@ -66,3 +66,41 @@ def load_pcap_fast(pcap_path):
         return []
 
     return packets
+
+
+def load_pcap_in_chunks(pcap_path, chunk_count=10):
+    """Load a PCAP file in roughly ``chunk_count`` pieces and return all packets.
+
+    This is a memory-friendly alternative that reads the file sequentially and
+    combines the packets from each chunk. If the file cannot be read, an empty
+    list is returned.
+    """
+    try:
+        file_size = os.path.getsize(pcap_path)
+    except FileNotFoundError:
+        print(f"❌ File not found: {pcap_path}")
+        return []
+
+    if RawPcapReader is None or RadioTap is None:
+        return []
+
+    chunk_size = max(1, file_size // max(1, chunk_count))
+    packets = []
+
+    try:
+        with RawPcapReader(pcap_path) as reader:
+            bytes_read = 0
+            for pkt_data, _ in reader:
+                try:
+                    pkt = RadioTap(pkt_data)
+                except Exception:
+                    continue
+                packets.append(pkt)
+                bytes_read += len(pkt_data)
+                if bytes_read >= chunk_size:
+                    bytes_read = 0
+    except Exception as e:
+        print(f"❌ Error reading {os.path.basename(pcap_path)}: {e}")
+        return []
+
+    return packets

@@ -15,7 +15,7 @@ import multiprocessing
 
 # Scapy imports, including the pcap writer
 from scapy.all import PcapWriter, Dot11, Dot11Auth, Dot11Deauth, Dot11Disas, Dot11Beacon, Dot11ProbeReq, Dot11ProbeResp, EAPOL, Dot11AssoReq, RadioTap, Dot11Elt, ARP, DNS, DHCP, BOOTP
-from pcap_utils import load_pcap_fast
+from pcap_utils import load_pcap_in_chunks
 from tqdm import tqdm
 from pick import pick
 
@@ -373,7 +373,7 @@ def _process_single_pcap(pcap_file, scan_plan):
     output_lines.append("\n" + "=" * 60)
     output_lines.append(f"📄 Scanning: {os.path.basename(pcap_file)}")
 
-    packets = load_pcap_fast(pcap_file)
+    packets = load_pcap_in_chunks(pcap_file, chunk_count=10)
     if not packets:
         return "\n".join(output_lines)
 
