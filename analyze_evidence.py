@@ -25,9 +25,10 @@ from scapy.all import (
 from pick import pick
 
 # --- Configuration ---
-SCANNER_FILE_PATH = "scan.py"
-EVIDENCE_DIRECTORY = "evidence"
-AI_REPORTS_DIRECTORY = "ai_reports"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SCANNER_FILE_PATH = os.path.join(SCRIPT_DIR, "scan.py")
+EVIDENCE_DIRECTORY = os.path.join(SCRIPT_DIR, "evidence")
+AI_REPORTS_DIRECTORY = os.path.join(SCRIPT_DIR, "ai_reports")
 
 # --- AI Report Generation ---
 

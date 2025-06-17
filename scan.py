@@ -23,7 +23,8 @@ from pick import pick
 PCAP_DIRECTORY = "/var/tmp/"
 LOG_FILE = "wifi_threats.log"
 DETECTIONS_FILE = "wifi_pcap_regex.json"
-EVIDENCE_DIRECTORY = os.path.join(os.getcwd(), "evidence") # Save evidence in a sub-folder
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+EVIDENCE_DIRECTORY = os.path.join(SCRIPT_DIR, "evidence")
 
 # -- Advanced Detection Thresholds --
 DEAUTH_FLOOD_THRESHOLD = 10
