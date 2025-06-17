@@ -7,7 +7,7 @@ except Exception:  # scapy may be stubbed in tests
     RadioTap = None
 
 def load_pcap_fast(pcap_path):
-    """Efficiently load packets from a PCAP using RawPcapReader."""
+    """Efficiently load packets from a PCAP using dpkt if available."""
     try:
         file_size = os.path.getsize(pcap_path)
     except FileNotFoundError:
@@ -15,8 +15,23 @@ def load_pcap_fast(pcap_path):
         return []
     packets = []
 
+
     if RawPcapReader is None or RadioTap is None:
         return packets
+
+    # Try the dpkt reader first for speed
+    try:
+        import dpkt  # type: ignore
+        with open(pcap_path, "rb") as f:
+            for ts, buf in dpkt.pcap.Reader(f):
+                try:
+                    pkt = RadioTap(buf)
+                except Exception:
+                    continue
+                packets.append(pkt)
+        return packets
+    except Exception:
+        packets = []  # fall back to RawPcapReader
 
     try:
         try:
