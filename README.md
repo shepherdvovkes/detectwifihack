@@ -37,7 +37,7 @@ The toolkit is designed to be used in a sequential workflow, moving from broad s
 **Typical Workflow:**
 
 1.  **Capture Traffic**: Use an external tool like `tcpdump`, `Wireshark`, or `airodump-ng` to capture Wi-Fi traffic and save it as a `.pcap` file in `/var/tmp/`.
-2.  **Initial Scan (`scan.py`)**: Run the main scanner on the captured `.pcap` files. The scanner identifies a wide range of threats based on the JSON rule set. If any threats are found, it generates evidence files (`warning_*.pcap` and `warning_*.txt`) in the `evidence/` directory.
+2.  **Initial Scan (`scan.py`)**: Run the main scanner on the captured `.pcap` files. The scanner identifies a wide range of threats based on the JSON rule set. If any threats are found, it generates evidence files (`warning_*.pcap` and `warning_*.txt`) in the `evidence/` directory located next to the script.
 3.  **Evidence Analysis (`analyze_evidence.py`)**: Run the evidence analyzer to investigate the generated evidence files. This tool focuses on your personal networks (`MY_NETWORKS`) and tells you which unknown devices are attacking them.
 4.  **Generate Mitigation Plan**: Use the AI integration within `analyze_evidence.py` to get a custom report on how to defend against the specific attacks you found.
 5.  **Advanced Spoofing Detection (`rfingertip.py`)**: For deeper investigation, use the RF fingerprinting tool on either the original captures or the focused evidence files to look for signs of MAC spoofing.
@@ -57,9 +57,9 @@ The toolkit is designed to be used in a sequential workflow, moving from broad s
 | `.env`                        | **Required.** A local, untracked file for storing sensitive API keys (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`).                                                                                                   |
 | `.gitignore`                | Standard Git ignore file. Prevents sensitive files (`.env`) and generated directories from being committed.                                                                                                |
 | **Generated Output** |                                                                                                                                                                                                            |
-| `evidence/`                   | Automatically created directory where `.pcap` and `.txt` evidence files are saved by `scan.py`. **This is the output of Phase 1.** |
-| `ai_reports/`                 | Automatically created directory where AI-generated mitigation reports are saved by `analyze_evidence.py`.                                                                                                 |
-| `rf_fingerprints_report.json` | The JSON output from the `rfingertip.py` analysis, detailing suspicious device clusters.                                                                                                                 |
+| `evidence/`                   | Automatically created directory (placed next to the scripts) where `.pcap` and `.txt` evidence files are saved by `scan.py`. **This is the output of Phase 1.** |
+| `ai_reports/`                 | Automatically created directory (next to the scripts) where AI-generated mitigation reports are saved by `analyze_evidence.py`. |
+| `rf_fingerprints_report.json` | The JSON output from the `rfingertip.py` analysis, detailing suspicious device clusters. |
 
 ---
 
