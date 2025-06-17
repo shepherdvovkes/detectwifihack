@@ -101,7 +101,10 @@ openai
 anthropic
 pick
 tqdm
+dpkt
 ```
+`dpkt` is optional but speeds up packet loading in `pcap_utils.load_pcap_fast`.
+If not installed, the function falls back to Scapy's `RawPcapReader`.
 5. Set Up API Keys
 Create a file named .env in the root of the project directory. Add your API keys, ensuring they are enclosed in quotes:
 
