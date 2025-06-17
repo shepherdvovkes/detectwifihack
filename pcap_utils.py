@@ -2,6 +2,18 @@ import os
 
 try:
     from scapy.all import RawPcapReader, RadioTap
+    # --- PATCH: handle Radiotap parsing issues on newer Python versions ---
+    try:
+        import scapy.layers.dot11 as dot11  # type: ignore
+
+        def _patched_next_radiotap_extpm(st):
+            return lambda *args, **kwargs: dot11.RadioTapExtendedPresenceMask(
+                *args, index=st, **kwargs
+            )
+
+        dot11._next_radiotap_extpm = _patched_next_radiotap_extpm
+    except Exception:
+        pass
 except Exception:  # scapy may be stubbed in tests
     RawPcapReader = None
     RadioTap = None
