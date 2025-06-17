@@ -2,18 +2,6 @@ import os
 
 try:
     from scapy.all import RawPcapReader, RadioTap
-    # --- PATCH: handle Radiotap parsing issues on newer Python versions ---
-    try:
-        import scapy.layers.dot11 as dot11  # type: ignore
-
-        def _patched_next_radiotap_extpm(st):
-            return lambda *args, **kwargs: dot11.RadioTapExtendedPresenceMask(
-                *args, index=st, **kwargs
-            )
-
-        dot11._next_radiotap_extpm = _patched_next_radiotap_extpm
-    except Exception:
-        pass
 except Exception:  # scapy may be stubbed in tests
     RawPcapReader = None
     RadioTap = None
@@ -73,44 +61,6 @@ def load_pcap_fast(pcap_path):
                 pos = getattr(reader, "offset", reader.f.tell())
                 bar.update(pos - prev)
                 prev = pos
-    except Exception as e:
-        print(f"❌ Error reading {os.path.basename(pcap_path)}: {e}")
-        return []
-
-    return packets
-
-
-def load_pcap_in_chunks(pcap_path, chunk_count=10):
-    """Load a PCAP file in roughly ``chunk_count`` pieces and return all packets.
-
-    This is a memory-friendly alternative that reads the file sequentially and
-    combines the packets from each chunk. If the file cannot be read, an empty
-    list is returned.
-    """
-    try:
-        file_size = os.path.getsize(pcap_path)
-    except FileNotFoundError:
-        print(f"❌ File not found: {pcap_path}")
-        return []
-
-    if RawPcapReader is None or RadioTap is None:
-        return []
-
-    chunk_size = max(1, file_size // max(1, chunk_count))
-    packets = []
-
-    try:
-        with RawPcapReader(pcap_path) as reader:
-            bytes_read = 0
-            for pkt_data, _ in reader:
-                try:
-                    pkt = RadioTap(pkt_data)
-                except Exception:
-                    continue
-                packets.append(pkt)
-                bytes_read += len(pkt_data)
-                if bytes_read >= chunk_size:
-                    bytes_read = 0
     except Exception as e:
         print(f"❌ Error reading {os.path.basename(pcap_path)}: {e}")
         return []

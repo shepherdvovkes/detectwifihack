@@ -87,17 +87,3 @@ def test_load_pcap_fast_fallback(tmp_path):
     pu = import_pcap_utils()
     result = pu.load_pcap_fast(str(p))
     assert result == [('RT', b'c'), ('RT', b'd')]
-
-
-def test_load_pcap_in_chunks(tmp_path):
-    p = tmp_path / "chunk.pcap"
-    p.write_bytes(b"data")
-    pu = import_pcap_utils()
-    result = pu.load_pcap_in_chunks(str(p), chunk_count=10)
-    assert result == [('RT', b'c'), ('RT', b'd')]
-
-
-def test_load_pcap_in_chunks_missing(tmp_path):
-    pu = import_pcap_utils()
-    result = pu.load_pcap_in_chunks(str(tmp_path / 'none.pcap'), chunk_count=10)
-    assert result == []
