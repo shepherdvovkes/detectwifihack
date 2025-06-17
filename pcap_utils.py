@@ -8,7 +8,11 @@ except Exception:  # scapy may be stubbed in tests
 
 def load_pcap_fast(pcap_path):
     """Efficiently load packets from a PCAP using RawPcapReader."""
-    file_size = os.path.getsize(pcap_path)
+    try:
+        file_size = os.path.getsize(pcap_path)
+    except FileNotFoundError:
+        print(f"❌ File not found: {pcap_path}")
+        return []
     packets = []
 
     if RawPcapReader is None or RadioTap is None:
