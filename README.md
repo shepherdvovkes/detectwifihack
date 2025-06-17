@@ -13,8 +13,9 @@ An advanced toolkit for performing deep-packet inspection and analysis of 802.11
     - [Phase 3: RF Fingerprinting with `rfingertip.py`](#phase-3-rf-fingerprinting-with-rfingertippy)
 6.  [Understanding the Detections](#understanding-the-detections)
 7.  [Troubleshooting](#troubleshooting)
-8.  [Contributing](#contributing)
-9.  [License](#license)
+8.  [Legal and Authorized Use Only](#legal-and-authorized-use-only)
+9.  [Contributing](#contributing)
+10.  [License](#license)
 
 ---
 
@@ -188,6 +189,9 @@ Verify that your API keys in the .env file are correct and have not expired.
 Ensure your internet connection is active.
 Check the AI provider's status page for any outages.
 GUI (rfingertip.py) doesn't launch: Make sure you have installed all dependencies correctly, especially PyQt6.
+
+## Legal and Authorized Use Only
+Use this toolkit only on networks and devices you own or have explicit permission to test. Unauthorized scanning may violate local laws or service agreements.
 Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. Please make sure to update tests as appropriate.
 
