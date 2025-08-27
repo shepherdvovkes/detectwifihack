@@ -10,8 +10,10 @@ from time import sleep
 from datetime import datetime
 import io
 from contextlib import redirect_stdout
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed, ThreadPoolExecutor
 import multiprocessing
+from functools import lru_cache
+import time
 
 # Scapy imports, including the pcap writer
 from scapy.all import PcapWriter, Dot11, Dot11Auth, Dot11Deauth, Dot11Disas, Dot11Beacon, Dot11ProbeReq, Dot11ProbeResp, EAPOL, Dot11AssoReq, RadioTap, Dot11Elt, ARP, DNS, DHCP, BOOTP
@@ -39,6 +41,11 @@ BROADCAST_STORM_THRESHOLD = 500
 LOCATION_PROFILING_THRESHOLD = 20
 SSID_MAX_LENGTH = 32
 
+# Performance settings
+MAX_WORKERS = min(multiprocessing.cpu_count(), 8)  # Limit max workers
+PACKET_BATCH_SIZE = 1000  # Process packets in batches
+ENABLE_CACHING = True  # Enable caching for repeated operations
+
 KNOWN_NETWORKS = {
     "0101001": "dc:62:79:7a:e6:f1",
     "TP-Link_5BA9_5G": "50:d4:f7:ee:5b:a8",
@@ -51,7 +58,7 @@ KNOWN_NETWORKS = {
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-# --- Helper Functions ---
+# --- Performance Optimized Helper Functions ---
 def get_channel(packet):
     if packet.haslayer(RadioTap):
         try:
@@ -61,6 +68,79 @@ def get_channel(packet):
                  if 5000 < freq < 6000: return (freq - 5000) // 5
         except Exception: pass
     return None
+
+def safe_get_attr(packet, attr_name, default=None):
+    """Safely get packet attribute without causing crashes."""
+    try:
+        return getattr(packet, attr_name, default)
+    except Exception:
+        return default
+
+def safe_decode_ssid(info):
+    """Safely decode SSID information."""
+    try:
+        if info and info != b'' and info != b'\x00':
+            return info.decode('utf-8', 'ignore')
+        return None
+    except Exception:
+        return None
+
+@lru_cache(maxsize=1024)
+def get_packet_type_cache(packet_hash):
+    """Cached packet type detection."""
+    return packet_hash
+
+def prefilter_packets(packets):
+    """Pre-filter packets by type for faster processing."""
+    filtered = {
+        'deauth': [],
+        'auth': [],
+        'beacon': [],
+        'probe_req': [],
+        'probe_resp': [],
+        'eapol': [],
+        'rts_cts': [],
+        'arp': [],
+        'dns': [],
+        'dhcp': [],
+        'other': []
+    }
+    
+    for packet in packets:
+        if packet.haslayer(Dot11Deauth) or packet.haslayer(Dot11Disas):
+            filtered['deauth'].append(packet)
+        elif packet.haslayer(Dot11Auth):
+            filtered['auth'].append(packet)
+        elif packet.haslayer(Dot11Beacon):
+            filtered['beacon'].append(packet)
+        elif packet.haslayer(Dot11ProbeReq):
+            filtered['probe_req'].append(packet)
+        elif packet.haslayer(Dot11ProbeResp):
+            filtered['probe_resp'].append(packet)
+        elif packet.haslayer(EAPOL):
+            filtered['eapol'].append(packet)
+        elif packet.haslayer(Dot11) and packet.type == 1 and packet.subtype in [11, 12]:
+            filtered['rts_cts'].append(packet)
+        elif packet.haslayer(ARP):
+            filtered['arp'].append(packet)
+        elif packet.haslayer(DNS):
+            filtered['dns'].append(packet)
+        elif packet.haslayer(DHCP):
+            filtered['dhcp'].append(packet)
+        else:
+            filtered['other'].append(packet)
+    
+    return filtered
+
+def process_packet_batch(packets, detection_func):
+    """Process a batch of packets with a detection function."""
+    results = []
+    try:
+        for threat_desc, packet in detection_func(packets):
+            results.append((threat_desc, packet))
+    except Exception as e:
+        logging.error(f"Error in detection function: {e}")
+    return results
 
 def load_detections_from_json(file_path):
     try:
@@ -130,55 +210,72 @@ def placeholder_check(packets):
     yield from () # Yield an empty generator
 
 def check_deauth_disas_floods(packets):
-    deauth_packets = [p for p in packets if p.haslayer(Dot11Deauth) or p.haslayer(Dot11Disas)]
-    if len(deauth_packets) > DEAUTH_FLOOD_THRESHOLD:
-        for packet in deauth_packets:
+    # Optimized: packets are already filtered for deauth/disas
+    if len(packets) > DEAUTH_FLOOD_THRESHOLD:
+        for packet in packets:
             yield "Deauthentication/Disassociation Flood", packet
 
 def check_auth_flood(packets):
+    # Optimized: packets are already filtered for auth
     auth_requests_by_ap = defaultdict(list)
     for packet in packets:
-        if packet.haslayer(Dot11Auth):
-            auth_requests_by_ap[packet.addr1].append(packet)
+        auth_requests_by_ap[safe_get_attr(packet, 'addr1', 'Unknown')].append(packet)
     for ap, pkts in auth_requests_by_ap.items():
         if len(pkts) > AUTH_FLOOD_THRESHOLD:
             for packet in pkts:
                 yield f"Authentication Flood on AP {ap}", packet
 
 def check_rogue_access_points(packets):
+    # Optimized: packets are already filtered for beacon/probe_resp
     for packet in packets:
-        if packet.haslayer(Dot11Beacon) or packet.haslayer(Dot11ProbeResp):
-            try:
-                ssid = packet.info.decode('utf-8', 'ignore')
-                bssid = packet.addr2
-                if ssid and ssid in KNOWN_NETWORKS and KNOWN_NETWORKS[ssid].lower() != bssid.lower():
-                    yield f"Rogue AP: SSID '{ssid}' from unauthorized BSSID {bssid}", packet
-            except: continue
+        try:
+            info = safe_get_attr(packet, 'info', None)
+            ssid = safe_decode_ssid(info) if info else None
+            bssid = safe_get_attr(packet, 'addr2', None)
+            if ssid and bssid and ssid in KNOWN_NETWORKS and KNOWN_NETWORKS[ssid].lower() != bssid.lower():
+                yield f"Rogue AP: SSID '{ssid}' from unauthorized BSSID {bssid}", packet
+        except: 
+            continue
 
 def check_wpa_handshake_capture(packets):
+    # Optimized: packets are already filtered for EAPOL
     handshakes = defaultdict(list)
     for packet in packets:
-        if packet.haslayer(EAPOL):
-            participants = tuple(sorted((packet.addr1, packet.addr2)))
+        addr1 = safe_get_attr(packet, 'addr1', None)
+        addr2 = safe_get_attr(packet, 'addr2', None)
+        if addr1 and addr2:
+            participants = tuple(sorted((addr1, addr2)))
             handshakes[participants].append(packet)
     for participants, pkts in handshakes.items():
-        key_infos = {p[EAPOL].key_info for p in pkts if hasattr(p[EAPOL], 'key_info')}
+        key_infos = set()
+        for p in pkts:
+            try:
+                if hasattr(p, 'EAPOL') and hasattr(p.EAPOL, 'key_info'):
+                    key_infos.add(p.EAPOL.key_info)
+            except:
+                continue
         if len(key_infos) >= 2:
             for packet in pkts:
                 yield f"WPA Handshake Capture between {participants[0]} and {participants[1]}", packet
 
 def check_anomalous_probe_requests(packets):
     for pkt in packets:
-        if pkt.haslayer(Dot11ProbeReq) and (not pkt.info or pkt.info == b'\x00'):
-            yield f"Anomalous Null Probe Request from {pkt.addr2}", pkt
+        if pkt.haslayer(Dot11ProbeReq):
+            info = safe_get_attr(pkt, 'info', None)
+            if not info or info == b'\x00':
+                addr2 = safe_get_attr(pkt, 'addr2', 'Unknown')
+                yield f"Anomalous Null Probe Request from {addr2}", pkt
     
 def check_malformed_beacon_frames(packets):
     for pkt in packets:
         if pkt.haslayer(Dot11Beacon):
             try:
-                if len(pkt.info) > SSID_MAX_LENGTH:
-                    yield f"Malformed Beacon: Long SSID from {pkt.addr2} (len: {len(pkt.info)})", pkt
-            except: continue
+                info = safe_get_attr(pkt, 'info', None)
+                if info and len(info) > SSID_MAX_LENGTH:
+                    addr2 = safe_get_attr(pkt, 'addr2', 'Unknown')
+                    yield f"Malformed Beacon: Long SSID from {addr2} (len: {len(info)})", pkt
+            except: 
+                continue
 
 def check_rts_cts_flood(packets):
     rts_cts_packets = [p for p in packets if p.haslayer(Dot11) and p.type == 1 and p.subtype in [11, 12]]
@@ -233,7 +330,11 @@ def check_karma_mana(packets):
             except: pass
 
 def check_hidden_ssid_decloak(packets):
-    hidden_aps = {p.addr2 for p in packets if p.haslayer(Dot11Beacon) and not p.info}
+    hidden_aps = set()
+    for p in packets:
+        if p.haslayer(Dot11Beacon) and (not p.info or p.info == b''):
+            hidden_aps.add(p.addr2)
+    
     for p in packets:
         if p.haslayer(Dot11ProbeResp) and p.addr2 in hidden_aps:
             try:
@@ -241,7 +342,8 @@ def check_hidden_ssid_decloak(packets):
                 if ssid:
                     yield f"Hidden SSID Decloaked: {p.addr2} is '{ssid}'", p
                     hidden_aps.remove(p.addr2)
-            except: pass
+            except: 
+                pass
 
 def check_arp_spoofing(packets):
     ip_mac = {}
@@ -369,24 +471,57 @@ def get_pcap_files(directory):
 
 def _process_single_pcap(pcap_file, scan_plan):
     """Helper for multiprocessing: analyze one pcap file."""
+    start_time = time.time()
     output_lines = []
     output_lines.append("\n" + "=" * 60)
     output_lines.append(f"📄 Scanning: {os.path.basename(pcap_file)}")
 
-    packets = load_pcap_fast(pcap_file)
+    # Determine sampling rate based on file size
+    file_size = os.path.getsize(pcap_file)
+    sample_rate = 1.0
+    if file_size > 100 * 1024 * 1024:  # 100MB
+        sample_rate = 0.5  # 50% sampling
+        print(f"📊 Large file detected ({file_size/1024/1024:.1f}MB), using 50% sampling for speed")
+    elif file_size > 50 * 1024 * 1024:  # 50MB
+        sample_rate = 0.75  # 75% sampling
+        print(f"📊 Medium file detected ({file_size/1024/1024:.1f}MB), using 75% sampling for speed")
+
+    print(f"🔄 Loading packets from {os.path.basename(pcap_file)}...")
+    packets = load_pcap_fast(pcap_file, sample_rate=sample_rate)
     if not packets:
+        output_lines.append("❌ No packets loaded")
         return "\n".join(output_lines)
 
+    print(f"⚡ Processing {len(packets)} packets...")
+    
+    # Pre-filter all packets once for better performance
+    filtered_packets = prefilter_packets(packets)
+    
     threats_collection = defaultdict(list)
     active_plan = [d for d in scan_plan if d.get("name") in DETECTION_DISPATCHER]
 
-    for detection in active_plan:
-        check_name = detection["name"]
-        check_function = DETECTION_DISPATCHER.get(check_name)
-        if check_function:
-            for threat_desc, packet in check_function(packets):
-                threats_collection[threat_desc].append(packet)
+    # Use ThreadPoolExecutor for I/O bound operations
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = []
+        
+        for detection in active_plan:
+            check_name = detection["name"]
+            check_function = DETECTION_DISPATCHER.get(check_name)
+            if check_function:
+                # Submit detection tasks to thread pool
+                future = executor.submit(run_detection, check_function, filtered_packets, check_name)
+                futures.append(future)
+        
+        # Collect results
+        for future in as_completed(futures):
+            try:
+                results = future.result()
+                for threat_desc, packet in results:
+                    threats_collection[threat_desc].append(packet)
+            except Exception as e:
+                logging.error(f"Error in detection: {e}")
 
+    processing_time = time.time() - start_time
     output_lines.append("-" * 60)
     if threats_collection:
         output_lines.append(f"🚨 Threats Detected in {os.path.basename(pcap_file)}:")
@@ -397,8 +532,44 @@ def _process_single_pcap(pcap_file, scan_plan):
         save_evidence(threats_collection, os.path.basename(pcap_file))
     else:
         output_lines.append(f"✅ No threats detected in {os.path.basename(pcap_file)}.")
+    output_lines.append(f"⏱️  Processing time: {processing_time:.2f} seconds")
     output_lines.append("-" * 60)
     return "\n".join(output_lines)
+
+def run_detection(check_function, filtered_packets, check_name):
+    """Run a single detection function with pre-filtered packets."""
+    results = []
+    try:
+        # Determine which packet types this detection needs
+        if 'deauth' in check_name.lower() or 'disas' in check_name.lower():
+            packets_to_check = filtered_packets['deauth']
+        elif 'auth' in check_name.lower():
+            packets_to_check = filtered_packets['auth']
+        elif 'rogue' in check_name.lower() or 'beacon' in check_name.lower():
+            packets_to_check = filtered_packets['beacon'] + filtered_packets['probe_resp']
+        elif 'handshake' in check_name.lower() or 'wpa' in check_name.lower():
+            packets_to_check = filtered_packets['eapol']
+        elif 'probe' in check_name.lower():
+            packets_to_check = filtered_packets['probe_req']
+        elif 'rts' in check_name.lower() or 'cts' in check_name.lower():
+            packets_to_check = filtered_packets['rts_cts']
+        elif 'arp' in check_name.lower():
+            packets_to_check = filtered_packets['arp']
+        elif 'dns' in check_name.lower():
+            packets_to_check = filtered_packets['dns']
+        elif 'dhcp' in check_name.lower():
+            packets_to_check = filtered_packets['dhcp']
+        else:
+            # For other detections, use all packets
+            packets_to_check = sum(filtered_packets.values(), [])
+        
+        if packets_to_check:
+            for threat_desc, packet in check_function(packets_to_check):
+                results.append((threat_desc, packet))
+    except Exception as e:
+        logging.error(f"Error in {check_name}: {e}")
+    
+    return results
 
 
 def run_pcap_analysis(pcap_files_to_scan, scan_plan):

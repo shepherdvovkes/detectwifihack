@@ -1,0 +1,216 @@
+2025-08-27 23:34:10,944 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:34:11,075 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:34:11,205 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:34:11,332 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:34:11,468 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:34:11,602 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:34:11,729 - ERROR - TShark error: tshark: Some fields aren't valid:
+	dhcp.client.hw_mac
+
+2025-08-27 23:34:11,858 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:34:11,987 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:34:12,116 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:34:12,857 - ERROR - TShark error: tshark: The file "/var/tmp/vovkes’s MacBook Pro_ch36_2025-08-27_23.13.43.543.pcap" appears to have been cut short in the middle of a packet.
+
+2025-08-27 23:34:12,984 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:34:13,114 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:35:02,214 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:35:02,342 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:35:02,469 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:35:02,590 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:35:02,713 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:35:02,835 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:35:02,957 - ERROR - TShark error: tshark: Some fields aren't valid:
+	dhcp.client.hw_mac
+
+2025-08-27 23:35:03,080 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:35:03,202 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:35:03,326 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:35:04,050 - ERROR - TShark error: tshark: The file "/var/tmp/vovkes’s MacBook Pro_ch36_2025-08-27_23.13.43.543.pcap" appears to have been cut short in the middle of a packet.
+
+2025-08-27 23:35:04,172 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:35:04,294 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:05,989 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:06,119 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:06,248 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:06,377 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:06,510 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:06,638 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:06,765 - ERROR - TShark error: tshark: Some fields aren't valid:
+	dhcp.client.hw_mac
+
+2025-08-27 23:37:06,893 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:07,020 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:07,148 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:09,058 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:09,186 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:09,313 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:35,940 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:36,068 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:36,196 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:36,325 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:36,453 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:36,581 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:36,711 - ERROR - TShark error: tshark: Some fields aren't valid:
+	dhcp.client.hw_mac
+
+2025-08-27 23:37:36,842 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:36,972 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:37,101 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:38,903 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:39,030 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:37:39,156 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:27,756 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:27,884 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:28,011 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:28,135 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:28,259 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:28,383 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:28,508 - ERROR - TShark error: tshark: Some fields aren't valid:
+	dhcp.client.hw_mac
+
+2025-08-27 23:38:28,632 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:28,756 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:28,881 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:30,545 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:30,669 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:30,793 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:53,411 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:53,531 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:53,652 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:53,783 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:53,909 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:54,032 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:54,157 - ERROR - TShark error: tshark: Some fields aren't valid:
+	dhcp.client.hw_mac
+
+2025-08-27 23:38:54,280 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:54,402 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:54,524 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:54,836 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:54,963 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:55,086 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:58,710 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:58,832 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:58,956 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:59,080 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:59,208 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:59,333 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:59,458 - ERROR - TShark error: tshark: Some fields aren't valid:
+	dhcp.client.hw_mac
+
+2025-08-27 23:38:59,580 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:59,703 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:38:59,849 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:00,230 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:00,352 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:00,476 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:57,113 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:57,236 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:57,357 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:57,480 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:57,605 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:57,727 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:57,850 - ERROR - TShark error: tshark: Some fields aren't valid:
+	dhcp.client.hw_mac
+
+2025-08-27 23:39:57,974 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:58,095 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:58,217 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:58,940 - ERROR - TShark error: tshark: The file "/var/tmp/vovkes’s MacBook Pro_ch36_2025-08-27_23.13.43.543.pcap" appears to have been cut short in the middle of a packet.
+
+2025-08-27 23:39:59,062 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
+2025-08-27 23:39:59,184 - ERROR - TShark error: tshark: Display filters were specified both with "-Y" and with additional command-line arguments.
+
